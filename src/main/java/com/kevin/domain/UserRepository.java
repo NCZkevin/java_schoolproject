@@ -15,16 +15,23 @@ import java.util.List;
  */
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-//    @Modifying
-//    @Query("select u from User where verify = -1")
     List<User> findAllByVerify(Integer verify);
+
+    User findUserById(Integer id);
+
+    User findByUsername(Long username);
 
     @Modifying
     @Query("update User u set u.lastLoginTime = current_date where u.id = ?1")
-    Date modifyLoginDate(int id);
+    Date updateLoginDate(int id);
 
     @Modifying
     @Query("update User u set u.loginCount=u.loginCount+1 where u.id = ?1")
     int updateLoginCount(int id);
+
+
+//    @Modifying
+//    @Query(value="insert into user (username,password) VALUES (?1 ,?2)",nativeQuery= true )
+//    public void AddUser(Integer username,String password);
 
 }

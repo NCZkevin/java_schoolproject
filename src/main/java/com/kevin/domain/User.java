@@ -3,6 +3,7 @@ package com.kevin.domain;
 import javafx.beans.DefaultProperty;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -18,7 +19,7 @@ public class User {
 //    private Person person;
     private Long username;
     private String password;
-    private Date lastLoginTime;
+    private Timestamp lastLoginTime;
     private Integer loginCount;
     private Integer permission = 0; // 0为普通用户，1为管理员
     private Integer verify = 0; // 0为未审核，1为审核通过，2为被禁用，-1为审核未通过
@@ -47,11 +48,11 @@ public class User {
         this.password = password;
     }
 
-    public Date getLastLoginTime() {
+    public Timestamp getLastLoginTime() {
         return lastLoginTime;
     }
 
-    public void setLastLoginTime(Date lastLoginTime) {
+    public void setLastLoginTime(Timestamp  lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
 

@@ -20,6 +20,7 @@ public class Person {
     private String major;
     private String classes;
     private Integer enterYear;
+    private Integer graduationYear;
     private String workUnit;
     private String city;
     private Long phoneNumber;
@@ -97,8 +98,6 @@ public class Person {
     public void setGraduationYear(Integer graduationYear) {
         this.graduationYear = graduationYear;
     }
-
-    private Integer graduationYear;
 
     public String getWorkUnit() {
         return workUnit;
