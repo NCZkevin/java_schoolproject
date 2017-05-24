@@ -94,7 +94,7 @@ public class UserController {
             user.setPassword(password);
             user.setLoginCount(0);
             userRepository.save(user);
-            map.put("message","注册成功");
+//            map.put("message","注册成功");
             return map;
         }
         else {
@@ -119,6 +119,8 @@ public class UserController {
         user.setLoginCount(user.getLoginCount()+1);
         user.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
+        map.put("name",username);
+        map.put("success","true");
         map.put("message","登陆成功");
         return map;
     }
