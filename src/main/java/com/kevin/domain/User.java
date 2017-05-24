@@ -4,7 +4,6 @@ import javafx.beans.DefaultProperty;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * Created by min on 2017/5/23.
