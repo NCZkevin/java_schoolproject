@@ -1,5 +1,6 @@
 package com.kevin.web;
 
+import com.kevin.domain.Person;
 import com.kevin.domain.PersonRepository;
 import com.kevin.domain.User;
 import com.kevin.domain.UserRepository;
@@ -39,10 +40,22 @@ public class UserController {
         return userRepository.findAllByVerify(-1);
     }
 
+    @ApiOperation(value = "查询所有被禁用用户")
+    @GetMapping(value = "/forbiddenusers")
+    private List<User> getForbiddenUsersList(){
+        return userRepository.findAllByVerify(2);
+    }
+
     @ApiOperation(value = "查询所有通过审核用户")
     @GetMapping(value = "/passedusers")
     private List<User> getPassedUsersList(){
         return userRepository.findAllByVerify(1);
+    }
+
+    @ApiOperation(value = "查询所有尚未审核用户")
+    @GetMapping(value = "/waitusers")
+    private List<User> getWaitUsersList(){
+        return userRepository.findAllByVerify(0);
     }
 
     @ApiOperation(value = "通过审核", notes="根据url的id找到用户并通过审核")
@@ -88,16 +101,23 @@ public class UserController {
     public Map register(@RequestParam("username") Long username,
                                @RequestParam("password") String password) {
         Map<String,Object> map = new HashMap<>();
+        if(username==null || Objects.equals(password, "")){
+            map.put("success",false);
+            map.put("message","用户名或密码不能为空");
+            return map;
+        }
         if (userRepository.findByUsername(username) == null) {
             User user =new User();
             user.setUsername(username);
             user.setPassword(password);
             user.setLoginCount(0);
             userRepository.save(user);
-//            map.put("message","注册成功");
+            map.put("success",true);
+            map.put("message","注册成功");
             return map;
         }
         else {
+            map.put("success",false);
             map.put("message","该账户已注册");
             return map;
         }
@@ -108,13 +128,41 @@ public class UserController {
     public Map login(@RequestParam("username") Long username,
                             @RequestParam("password") String password) throws ParseException {
         Map<String,Object> map = new HashMap<>();
+        if(username==null || Objects.equals(password, "")){
+            map.put("success",false);
+            map.put("message","用户名或密码不能为空");
+            return map;
+        }
         User user = userRepository.findByUsername(username);
         if (user == null){
+            map.put("success",false);
             map.put("message","用户不存在");
             return map;
         }else if (!Objects.equals(user.getPassword(), password)){
+            map.put("success",false);
             map.put("message","密码错误");
             return map;
+        }
+        if(user.getVerify()==0){
+            map.put("success",false);
+            map.put("message","尚未通过审核，请等待管理员审核");
+            return map;
+        }else if(user.getVerify()==-1){
+            map.put("success",false);
+            map.put("message","审核未通过，请联系管理员");
+            return map;
+        }else if (user.getVerify()==2){
+            map.put("success",false);
+            map.put("message","账户被禁用，请联系管理员");
+            return map;
+        }
+        if (user.getLoginCount()==0 || user.getLoginCount()==null){
+            Person person = personRepository.findByStudentNum(username);
+            if(person==null){
+                Person p = new Person();
+                p.setStudentNum(username);
+                personRepository.save(p);
+            }
         }
         user.setLoginCount(user.getLoginCount()+1);
         user.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
@@ -122,18 +170,19 @@ public class UserController {
         map.put("name",username);
         map.put("success","true");
         map.put("message","登陆成功");
+        map.put("user",user);
         return map;
     }
 
-    @ApiOperation(value = "获取personId",notes = "根据用户id查询对应通讯录的person，返回person的id")
-    @GetMapping(value = "/user-person/{id}")
-    public int getPersonId(@PathVariable("id") Integer id){
-        User user = userRepository.findOne(id);
-        Long username = user.getUsername();
-        if(personRepository.findByStudentNum(username)==null){
-            return -1;
-        }else{
-            return personRepository.findByStudentNum(username).getId();
-        }
-    }
+//    @ApiOperation(value = "获取personId",notes = "根据用户id查询对应通讯录的person，返回person的id")
+//    @GetMapping(value = "/user-person/{id}")
+//    public int getPersonId(@PathVariable("id") Integer id){
+//        User user = userRepository.findOne(id);
+//        Long username = user.getUsername();
+//        if(personRepository.findByStudentNum(username)==null){
+//            return -1;
+//        }else{
+//            return personRepository.findByStudentNum(username).getId();
+//        }
+//    }
 }

@@ -2,6 +2,8 @@ package com.kevin.web;
 
 import com.kevin.domain.Person;
 import com.kevin.domain.PersonRepository;
+import com.kevin.domain.User;
+import com.kevin.domain.UserRepository;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +20,9 @@ import java.util.*;
 public class PersonController {
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private PersonRepository personRepository;
 
     @ApiOperation(value = "查找所有通讯录用户")
@@ -26,11 +31,14 @@ public class PersonController {
         return personRepository.findAll();
     }
 
-    @ApiOperation(value = "修改用户信息")
+    @ApiOperation(value = "修改用户信息",notes = "id为用户user的id")
     @PutMapping(value = "/person/{id}")
     public void putPerson(@PathVariable("id") Integer id,
                           @RequestBody  Map map) throws JSONException {
-        Person person = personRepository.findOne(id);
+        User user = userRepository.findOne(id);
+        Long username = user.getUsername();
+        Person person = personRepository.findByStudentNum(username);
+
         if(map.get("name")!=null){
             person.setName((String) map.get("name"));
         }
