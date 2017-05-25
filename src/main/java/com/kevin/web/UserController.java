@@ -167,7 +167,8 @@ public class UserController {
         user.setLoginCount(user.getLoginCount()+1);
         user.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
-        map.put("success",true);
+        map.put("name",username);
+        map.put("success","true");
         map.put("message","登陆成功");
         map.put("user",user);
         return map;
