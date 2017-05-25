@@ -19,7 +19,7 @@ public class User {
     private Long username;
     private String password;
     private Timestamp lastLoginTime;
-    private Integer loginCount;
+    private Integer loginCount = 0;
     private Integer permission = 0; // 0为普通用户，1为管理员
     private Integer verify = 0; // 0为未审核，1为审核通过，2为被禁用，-1为审核未通过
 
@@ -82,6 +82,5 @@ public class User {
     public User(){
 
     }
-
 
 }

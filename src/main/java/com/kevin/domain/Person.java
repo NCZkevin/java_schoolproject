@@ -1,7 +1,6 @@
 package com.kevin.domain;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by kevin on 17/4/22.
