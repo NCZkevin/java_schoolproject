@@ -53,61 +53,46 @@ public class POIController {
             }
             if (person.getSex()!=null){
                 row.createCell(3).setCellValue(person.getSex());
-
             }else{
                 row.createCell(3).setCellValue("");
             }
             if (person.getAge()!=null){
                 row.createCell(4).setCellValue(person.getAge());
-
             }else{
                 row.createCell(4).setCellValue("");
             }
             if (person.getMajor()!=null){
                 row.createCell(5).setCellValue(person.getMajor());
-
             }else{
                 row.createCell(5).setCellValue("");
-
             }
             if (person.getClasses()!=null){
                 row.createCell(6).setCellValue(person.getClasses());
-
-
             }else{
                 row.createCell(6).setCellValue("");
             }
             if (person.getEnterYear()!=null){
                 row.createCell(7).setCellValue(person.getEnterYear());
-
-
             }else{
                 row.createCell(7).setCellValue("");
             }
             if (person.getGraduationYear()!=null){
                 row.createCell(8).setCellValue(person.getGraduationYear());
-
-
             }else{
                 row.createCell(8).setCellValue("");
             }
             if (person.getWorkUnit()!=null){
                 row.createCell(9).setCellValue(person.getWorkUnit());
-
-
             }else{
                 row.createCell(9).setCellValue("");
             }
             if (person.getCity()!=null){
                 row.createCell(10).setCellValue(person.getCity());
-
-
             }else{
                 row.createCell(10).setCellValue("");
             }
             if (person.getPhoneNumber()!=null){
                 row.createCell(11).setCellValue(person.getPhoneNumber());
-
             }else{
                 row.createCell(11).setCellValue("");
             }
@@ -116,8 +101,6 @@ public class POIController {
             }else{
                 row.createCell(12).setCellValue("");
             }
-
-
         }
         OutputStream out = new FileOutputStream("E:/通讯录.xls");
         wb.write(out);// 进行输出，下载到本地

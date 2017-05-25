@@ -31,8 +31,16 @@ public class PersonController {
         return personRepository.findAll();
     }
 
+    @ApiOperation(value = "查询用户信息",notes = "id为用户user的id")
+    @GetMapping(value = "/personinfo/{id}")
+    public Person getPerson(@PathVariable("id") Integer id) throws JSONException{
+        User user = userRepository.findOne(id);
+        Long username = user.getUsername();
+        return personRepository.findByStudentNum(username);
+    }
+
     @ApiOperation(value = "修改用户信息",notes = "id为用户user的id")
-    @PutMapping(value = "/person/{id}")
+    @PutMapping(value = "/personinfo/{id}")
     public void putPerson(@PathVariable("id") Integer id,
                           @RequestBody  Map map) throws JSONException {
         User user = userRepository.findOne(id);
