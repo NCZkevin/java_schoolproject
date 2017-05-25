@@ -11,6 +11,9 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @SpringBootApplication
 public class BootApplication {
@@ -36,6 +39,24 @@ public class BootApplication {
                     .title("Swagger2")
                     .version("1.0")
                     .build();
+        }
+    }
+
+    @Configuration
+    public class CorsConfig {
+        private CorsConfiguration buildConfig() {
+            CorsConfiguration corsConfiguration = new CorsConfiguration();
+            corsConfiguration.addAllowedOrigin("*"); // 1
+            corsConfiguration.addAllowedHeader("*"); // 2
+            corsConfiguration.addAllowedMethod("*"); // 3
+            return corsConfiguration;
+        }
+
+        @Bean
+        public CorsFilter corsFilter() {
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", buildConfig()); // 4
+            return new CorsFilter(source);
         }
     }
 
