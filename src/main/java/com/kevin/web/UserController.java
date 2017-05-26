@@ -36,16 +36,9 @@ public class UserController {
 
 
     @ApiOperation(value = "查询所有用户")
-    @GetMapping(value="/users/{token}")
-    public Map getUsersList(@PathVariable("token") String token){
-        Map<String,Object> map = new HashMap<>();
-        if (!util.checkToken(token)){
-            map.put("success",false);
-            return map;
-        }
-        map.put("success",true);
-        map.put("users",userRepository.findAll());
-        return map;
+    @GetMapping(value="/users/")
+    public List<User> getUsersList(){
+        return userRepository.findAll();
     }
 
     @ApiOperation(value = "查询所有未通过审核用户")
@@ -104,7 +97,7 @@ public class UserController {
 
 
     @ApiOperation(value = "查询当前登录用户")
-    @GetMapping(value = "/user/{token}&{id}")
+    @GetMapping(value = "/user/{id}")
     public User getCurrentUser(@PathVariable("id") Integer id){
         return userRepository.findUserById(id);
     }
@@ -200,6 +193,15 @@ public class UserController {
         map.put("message","登陆成功");
         map.put("user",user);
         map.put("token",token);
+        return map;
+    }
+
+    @ApiOperation(value = "查询token是否过期",notes = "返回true未过期")
+    @GetMapping(value = "/user/token/{token}")
+    public Map getTokenStatus(@PathVariable("token") String token){
+        Map<String,Object> map = new HashMap<>();
+        boolean b = util.checkToken(token);
+        map.put("success",b);
         return map;
     }
 
