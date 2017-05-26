@@ -31,6 +31,19 @@ public class PersonController {
         return personRepository.findAll();
     }
 
+    @ApiOperation(value = "查找所有专业")
+    @GetMapping(value="/person/majors")
+    public List<String> getMajorsList(){
+        return personRepository.findAllMajors();
+    }
+
+    @ApiOperation(value = "查找专业所有person")
+    @GetMapping(value="/person/majors/{major}")
+    public List<Person> getPersonListByMajor(@PathVariable("major") String major){
+        return personRepository.findAllByMajor(major);
+    }
+
+
     @ApiOperation(value = "查询用户信息",notes = "id为用户user的id")
     @GetMapping(value = "/personinfo/{id}")
     public Person getPerson(@PathVariable("id") Integer id) throws JSONException{
@@ -41,8 +54,9 @@ public class PersonController {
 
     @ApiOperation(value = "修改用户信息",notes = "id为用户user的id")
     @PutMapping(value = "/personinfo/{id}")
-    public void putPerson(@PathVariable("id") Integer id,
+    public Map putPerson(@PathVariable("id") Integer id,
                           @RequestBody  Map map) throws JSONException {
+        Map<String,Object> reMap = new HashMap<>();
         User user = userRepository.findOne(id);
         Long username = user.getUsername();
         Person person = personRepository.findByStudentNum(username);
@@ -81,6 +95,9 @@ public class PersonController {
             person.setWorkUnit((String) map.get("work_unit"));
         }
         personRepository.save(person);
+        reMap.put("success",true);
+        reMap.put("person", person);
+        return reMap;
     }
 
     @ApiOperation(value = "删除用户")

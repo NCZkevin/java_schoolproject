@@ -12,6 +12,11 @@ import java.util.List;
 public interface PersonRepository extends JpaRepository<Person,Integer> {
     Person findByStudentNum(Long studentNum);
 
+    @Query(value = "select distinct major from person",nativeQuery=true)
+    List<String> findAllMajors();
+
+    List<Person> findAllByMajor(String major);
+
     @Query(value="select * from person p where p.name like CONCAT('%',?1,'%') OR p.age like CONCAT('%',?1,'%') OR p.city like CONCAT('%',?1,'%') OR " +
             "p.classes like CONCAT('%',?1,'%') OR p.email like CONCAT('%',?1,'%') OR p.enter_year like CONCAT('%',?1,'%') OR p.graduation_year like CONCAT('%',?1,'%')" +
             "OR p.major like CONCAT('%',?1,'%') OR p.phone_number like CONCAT('%',?1,'%') OR p.sex like CONCAT('%',?1,'%') OR p.student_num like CONCAT('%',?1,'%')" +

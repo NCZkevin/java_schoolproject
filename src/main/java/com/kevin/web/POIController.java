@@ -6,13 +6,20 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -25,10 +32,10 @@ public class POIController {
 
     @ApiOperation(value = "导出excel")
     @GetMapping(value = "/poidownload")
-    private void getPOI() throws IOException {
+    public void getPOI(HttpServletRequest request, HttpServletResponse response) throws IOException, URISyntaxException {
          String headers[] = { " ","学号", "姓名", "性别", "年龄", "专业", "班级", "入校年份", "毕业年份", "就业单位", "所在城市",
                 "联系方式", "电子邮箱"};
-
+         //response.setContentType("text/html;charset=utf-8");
          List<Person> personList = personRepository.findAll();
          Workbook wb = new HSSFWorkbook();
         int rowIndex = 0; // 第一行
@@ -102,9 +109,31 @@ public class POIController {
                 row.createCell(12).setCellValue("");
             }
         }
-        OutputStream out = new FileOutputStream("E:/通讯录.xls");
+
+        OutputStream out = new FileOutputStream(this.getClass().getClassLoader().getResource("").toURI().getPath()+"ImportContacts.xls");
         wb.write(out);// 进行输出，下载到本地
         out.flush();
         out.close();
+
+        String filePath = this.getClass().getClassLoader().getResource("").toURI().getPath()
+                + "/ImportContacts.xls";  //文件在项目中的路径
+        File outfile = new File(filePath);
+        String filename = outfile.getName();// 获取文件名称
+        InputStream fis = new BufferedInputStream(new FileInputStream(
+                filePath));
+        byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);  //读取文件流
+        fis.close();
+        response.reset();  //重置结果集
+        response.setHeader("content-type", "application/octet-stream");
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=ImportContacts.xls");
+        //获取返回体输出权
+        OutputStream os = new BufferedOutputStream(response.getOutputStream());
+        os.write(buffer); // 输出文件
+        os.flush();
+        os.close();
+
+
     }
 }
