@@ -4,11 +4,15 @@ import com.kevin.domain.Person;
 import com.kevin.domain.PersonRepository;
 import com.kevin.domain.User;
 import com.kevin.domain.UserRepository;
+import com.kevin.Util;
 import io.swagger.annotations.ApiOperation;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -28,10 +32,20 @@ public class UserController {
     @Autowired
     private PersonRepository personRepository;
 
+    Util util = new Util();
+
+
     @ApiOperation(value = "查询所有用户")
-    @GetMapping(value="/users")
-    public List<User> getUsersList(){
-        return userRepository.findAll();
+    @GetMapping(value="/users/{token}")
+    public Map getUsersList(@PathVariable("token") String token){
+        Map<String,Object> map = new HashMap<>();
+        if (!util.checkToken(token)){
+            map.put("success",false);
+            return map;
+        }
+        map.put("success",true);
+        map.put("users",userRepository.findAll());
+        return map;
     }
 
     @ApiOperation(value = "查询所有未通过审核用户")
@@ -90,7 +104,7 @@ public class UserController {
 
 
     @ApiOperation(value = "查询当前登录用户")
-    @GetMapping(value = "/user/{id}")
+    @GetMapping(value = "/user/{token}&{id}")
     public User getCurrentUser(@PathVariable("id") Integer id){
         return userRepository.findUserById(id);
     }
@@ -126,7 +140,7 @@ public class UserController {
     @ApiOperation(value = "登陆")
     @PostMapping(value = "/user/login")
     public Map login(@RequestParam("username") Long username,
-                            @RequestParam("password") String password) throws ParseException {
+                            @RequestParam("password") String password) throws ParseException, NoSuchAlgorithmException {
         Map<String,Object> map = new HashMap<>();
         if(username==null || Objects.equals(password, "")){
             map.put("success",false);
@@ -164,25 +178,29 @@ public class UserController {
                 personRepository.save(p);
             }
         }
+
         user.setLoginCount(user.getLoginCount()+1);
         user.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
+
+        // 生成token
+        String token;
+        Long userName = user.getUsername();
+        String strLong = Long.toString(userName);
+        byte[] inputData = strLong.getBytes();
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA");
+        messageDigest.update(inputData);
+        BigInteger sha = new BigInteger(messageDigest.digest());
+        String strCurrentTime = Long.toString(System.currentTimeMillis());
+        token = strCurrentTime + sha.toString(32);
+
+
         map.put("name",username);
         map.put("success","true");
         map.put("message","登陆成功");
         map.put("user",user);
+        map.put("token",token);
         return map;
     }
 
-//    @ApiOperation(value = "获取personId",notes = "根据用户id查询对应通讯录的person，返回person的id")
-//    @GetMapping(value = "/user-person/{id}")
-//    public int getPersonId(@PathVariable("id") Integer id){
-//        User user = userRepository.findOne(id);
-//        Long username = user.getUsername();
-//        if(personRepository.findByStudentNum(username)==null){
-//            return -1;
-//        }else{
-//            return personRepository.findByStudentNum(username).getId();
-//        }
-//    }
 }
