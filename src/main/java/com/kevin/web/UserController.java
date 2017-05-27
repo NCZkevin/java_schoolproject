@@ -6,6 +6,7 @@ import com.kevin.domain.User;
 import com.kevin.domain.UserRepository;
 import com.kevin.Util;
 import io.swagger.annotations.ApiOperation;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,7 +92,13 @@ public class UserController {
 
     @ApiOperation(value = "删除未通过审核的用户")
     @DeleteMapping(value = "/notpasseduser/{id}")
-    public void deleteUnpassUser(@PathVariable("id") Integer id){
+    public void deleteUnpassUser(@PathVariable("id") Integer id) throws JSONException {
+        //PersonController personController = new PersonController();
+        //Person person = personController.getPerson(id);
+        User user = userRepository.findOne(id);
+        Long username = user.getUsername();
+        Person person = personRepository.findByStudentNum(username);
+        personRepository.delete(person);
         userRepository.delete(id);
     }
 
@@ -119,6 +126,13 @@ public class UserController {
             user.setPassword(password);
             user.setLoginCount(0);
             userRepository.save(user);
+            Person person = personRepository.findByStudentNum(username);
+            if(person==null){
+                Person p = new Person();
+                p.setStudentNum(username);
+                personRepository.save(p);
+            }
+
             map.put("success",true);
             map.put("message","注册成功");
             return map;
@@ -163,14 +177,14 @@ public class UserController {
             map.put("message","账户被禁用，请联系管理员");
             return map;
         }
-        if (user.getLoginCount()==0 || user.getLoginCount()==null){
-            Person person = personRepository.findByStudentNum(username);
-            if(person==null){
-                Person p = new Person();
-                p.setStudentNum(username);
-                personRepository.save(p);
-            }
-        }
+//        if (user.getLoginCount()==0 || user.getLoginCount()==null){
+//            Person person = personRepository.findByStudentNum(username);
+//            if(person==null){
+//                Person p = new Person();
+//                p.setStudentNum(username);
+//                personRepository.save(p);
+//            }
+//        }
 
         user.setLoginCount(user.getLoginCount()+1);
         user.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
