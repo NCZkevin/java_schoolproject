@@ -44,13 +44,21 @@ public class PersonController {
     }
 
 
-    @ApiOperation(value = "查询用户信息",notes = "id为用户user的id")
+    @ApiOperation(value = "通过id查询用户信息",notes = "id为用户user的id")
     @GetMapping(value = "/personinfo/{id}")
     public Person getPerson(@PathVariable("id") Integer id) throws JSONException{
         User user = userRepository.findOne(id);
         Long username = user.getUsername();
         return personRepository.findByStudentNum(username);
     }
+
+    @ApiOperation(value = "通过username查询用户信息")
+    @GetMapping(value = "/personinfo/username/{username}")
+    public Person getPersonByUsername(@PathVariable("username") Long username) throws JSONException{
+        return personRepository.findByStudentNum(username);
+    }
+
+
 
     @ApiOperation(value = "修改用户信息",notes = "id为用户user的id")
     @PutMapping(value = "/personinfo/{id}")
