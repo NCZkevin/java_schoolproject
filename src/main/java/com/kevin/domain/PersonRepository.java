@@ -15,6 +15,7 @@ public interface PersonRepository extends JpaRepository<Person,Integer> {
     @Query(value = "select distinct major from person",nativeQuery=true)
     List<String> findAllMajors();
 
+
     List<Person> findAllByMajor(String major);
 
     @Query(value="select * from person p where p.name like CONCAT('%',?1,'%') OR p.age like CONCAT('%',?1,'%') OR p.city like CONCAT('%',?1,'%') OR " +
