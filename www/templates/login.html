@@ -1,0 +1,15 @@
+<ion-view view-title="登录">
+  <ion-content id="content">
+    <div class="list">
+    <label class="item item-input">
+        <span class="input-label" >Username</span>
+        <input type="text" ng-model="$parent.username">
+    </label>
+    <label class="item item-input">
+        <span class="input-label">Password</span>
+        <input type="password" ng-model="$parent.password">
+    </label>
+    <button class="button button-block button-positive" ng-click="signin()">登录</button>
+    </div>
+  </ion-content>
+</ion-view>
